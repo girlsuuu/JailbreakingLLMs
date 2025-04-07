@@ -1,0 +1,263 @@
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0mLiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+
+
+[1;31mGive Feedback / Get Help: https://github.com/BerriAI/litellm/issues/new[0m
+LiteLLM.Info: If you need to debug this error, use `litellm.set_verbose=True'.
+Traceback (most recent call last):
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1334, in completion
+    model_response = together_ai.completion(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/llms/together_ai.py", line 184, in completion
+    raise TogetherAIError(
+litellm.llms.together_ai.TogetherAIError: {
+  "id": "noRqS1U-4yUbBN-929d3f424d1c192f-PDX",
+  "error": {
+    "message": "Unable to access non-serverless model togethercomputer/llama-2-7b-chat. Please visit https://api.together.ai/models/togethercomputer/llama-2-7b-chat to create and start a new dedicated endpoint for the model.",
+    "type": "invalid_request_error",
+    "param": null,
+    "code": "model_not_available"
+  }
+}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2190, in wrapper
+    result = original_function(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1859, in completion
+    raise exception_type(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 7006, in exception_type
+    raise e
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 6974, in exception_type
+    raise APIConnectionError(
+litellm.exceptions.APIConnectionError: {
+  "id": "noRqS1U-4yUbBN-929d3f424d1c192f-PDX",
+  "error": {
+    "message": "Unable to access non-serverless model togethercomputer/llama-2-7b-chat. Please visit https://api.together.ai/models/togethercomputer/llama-2-7b-chat to create and start a new dedicated endpoint for the model.",
+    "type": "invalid_request_error",
+    "param": null,
+    "code": "model_not_available"
+  }
+}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 217, in <module>
+    main(args)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 40, in main
+    extracted_attack_list = attackLM.get_attack(convs_list, processed_response_list)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 144, in get_attack
+    valid_outputs, new_adv_prompts = self._generate_attack(processed_convs_list, init_message)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 98, in _generate_attack
+    outputs_list = self.model.batched_generate(convs_subset,
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/language_models.py", line 76, in batched_generate
+    outputs = litellm.batch_completion(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 2021, in batch_completion
+    results = [future.result() for future in completions]
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 2021, in <listcomp>
+    results = [future.result() for future in completions]
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2254, in wrapper
+    return litellm.completion_with_retries(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1891, in completion_with_retries
+    return retryer(original_function, *args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 475, in __call__
+    do = self.iter(retry_state=retry_state)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 376, in iter
+    result = action(retry_state)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 418, in exc_check
+    raise retry_exc.reraise()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 185, in reraise
+    raise self.last_attempt.result()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 478, in __call__
+    result = fn(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2283, in wrapper
+    raise e
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2190, in wrapper
+    result = original_function(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1859, in completion
+    raise exception_type(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 7006, in exception_type
+    raise e
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 6748, in exception_type
+    raise RateLimitError(
+litellm.exceptions.RateLimitError: TogetherAIException - {
+  "id": "noRqSCp-4yUbBN-929d3f465f411929-PIT",
+  "error": {
+    "message": "Request was rejected due to request rate limiting. Your rate limits are 60 RPM (1 QPS) and 60000000000000 TPM (1000000000000 TPS). See details: https://docs.together.ai/docs/rate-limits",
+    "type": "rate_limit",
+    "param": null,
+    "code": null
+  }
+}
+Traceback (most recent call last):
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1334, in completion
+    model_response = together_ai.completion(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/llms/together_ai.py", line 184, in completion
+    raise TogetherAIError(
+litellm.llms.together_ai.TogetherAIError: {
+  "id": "noRqS1U-4yUbBN-929d3f424d1c192f-PDX",
+  "error": {
+    "message": "Unable to access non-serverless model togethercomputer/llama-2-7b-chat. Please visit https://api.together.ai/models/togethercomputer/llama-2-7b-chat to create and start a new dedicated endpoint for the model.",
+    "type": "invalid_request_error",
+    "param": null,
+    "code": "model_not_available"
+  }
+}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2190, in wrapper
+    result = original_function(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1859, in completion
+    raise exception_type(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 7006, in exception_type
+    raise e
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 6974, in exception_type
+    raise APIConnectionError(
+litellm.exceptions.APIConnectionError: {
+  "id": "noRqS1U-4yUbBN-929d3f424d1c192f-PDX",
+  "error": {
+    "message": "Unable to access non-serverless model togethercomputer/llama-2-7b-chat. Please visit https://api.together.ai/models/togethercomputer/llama-2-7b-chat to create and start a new dedicated endpoint for the model.",
+    "type": "invalid_request_error",
+    "param": null,
+    "code": "model_not_available"
+  }
+}
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 217, in <module>
+    main(args)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 40, in main
+    extracted_attack_list = attackLM.get_attack(convs_list, processed_response_list)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 144, in get_attack
+    valid_outputs, new_adv_prompts = self._generate_attack(processed_convs_list, init_message)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 98, in _generate_attack
+    outputs_list = self.model.batched_generate(convs_subset,
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/language_models.py", line 76, in batched_generate
+    outputs = litellm.batch_completion(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 2021, in batch_completion
+    results = [future.result() for future in completions]
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 2021, in <listcomp>
+    results = [future.result() for future in completions]
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/thread.py", line 58, in run
+    result = self.fn(*self.args, **self.kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2254, in wrapper
+    return litellm.completion_with_retries(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1891, in completion_with_retries
+    return retryer(original_function, *args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 475, in __call__
+    do = self.iter(retry_state=retry_state)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 376, in iter
+    result = action(retry_state)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 418, in exc_check
+    raise retry_exc.reraise()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 185, in reraise
+    raise self.last_attempt.result()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 451, in result
+    return self.__get_result()
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/concurrent/futures/_base.py", line 403, in __get_result
+    raise self._exception
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/tenacity/__init__.py", line 478, in __call__
+    result = fn(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2283, in wrapper
+    raise e
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 2190, in wrapper
+    result = original_function(*args, **kwargs)
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/main.py", line 1859, in completion
+    raise exception_type(
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 7006, in exception_type
+    raise e
+  File "/home/vivi/.conda/envs/pair/lib/python3.10/site-packages/litellm/utils.py", line 6748, in exception_type
+    raise RateLimitError(
+litellm.exceptions.RateLimitError: TogetherAIException - {
+  "id": "noRqSCp-4yUbBN-929d3f465f411929-PIT",
+  "error": {
+    "message": "Request was rejected due to request rate limiting. Your rate limits are 60 RPM (1 QPS) and 60000000000000 TPM (1000000000000 TPS). See details: https://docs.together.ai/docs/rate-limits",
+    "type": "rate_limit",
+    "param": null,
+    "code": null
+  }
+}
