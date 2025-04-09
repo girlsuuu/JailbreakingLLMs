@@ -22,7 +22,7 @@ def load_attack_and_target_models(args):
     return attackLM, targetLM
 
 def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
-    if use_jailbreakbench:  
+    if use_jailbreakbench: 
         if local:
             from jailbreakbench import LLMvLLM
             lm = LLMvLLM(model_name=model_name)
@@ -32,7 +32,128 @@ def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
             lm = LLMLiteLLM(model_name= model_name, api_key = api_key)
     else:
         if local:
-            raise NotImplementedError
+            # 实现本地运行DeepSeek模型的逻辑
+            from vllm import LLM, SamplingParams
+            
+            # 根据模型名称选择相应的模型路径
+            if "DeepSeek-R1-Distill-Qwen-7B" in model_name:
+                model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-7B"  # 替换为实际模型路径
+            elif "DeepSeek-R1-Distill-Llama-8B" in model_name:
+                model_path = "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"  # 替换为实际模型路径
+            elif "DeepSeek-R1-Distill-Qwen-1.5B" in model_name:
+                model_path = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"  # 替换为实际模型路径
+            else:
+                raise ValueError(f"未知的本地模型: {model_name}")
+            
+            # 初始化VLLM模型
+            vllm_model = LLM(
+                model=model_path,
+                dtype="bfloat16",
+                gpu_memory_utilization=0.5,  
+                tensor_parallel_size=4,     
+                max_num_seqs=64,            
+                max_model_len=1024          
+            )
+            
+            # 创建一个包装类，使其接口与其他LM保持一致
+            class LocalDeepSeekModel:
+                def __init__(self, vllm_model, model_name):
+                    self.model = vllm_model
+                    self.model_name = model_name
+                    self.use_open_source_model = True  # 与AttackLM的initialize_output兼容
+                    self.post_message = ""  # 用于在AttackLM._generate_attack中拼接输出
+                    self.template = FASTCHAT_TEMPLATE_NAMES.get(model_name, "vicuna_v1.1")  # 为了兼容可能的模板引用
+                
+                def batched_generate(self, messages_list, max_n_tokens=None, temperature=0.7, top_p=0.9, extra_eos_tokens=None):
+                    """
+                    实现与AttackLM和TargetLM兼容的batched_generate方法
+                    
+                    参数:
+                    - messages_list: OpenAI格式的消息列表列表
+                    - max_n_tokens: 最大生成token数量
+                    - temperature: 温度参数
+                    - top_p: top-p采样参数
+                    - extra_eos_tokens: 额外的EOS标记列表
+                    
+                    返回:
+                    - 生成的文本响应列表
+                    """
+                    responses = []
+                    
+                    # 设置采样参数
+                    sampling_params = SamplingParams(
+                        temperature=temperature,
+                        top_p=top_p,
+                        max_tokens=max_n_tokens if max_n_tokens else 512,
+                        stop=extra_eos_tokens if extra_eos_tokens else None
+                    )
+                    
+                    # 处理每一条消息
+                    for messages in messages_list:
+                        # 构造完整的prompt
+                        full_prompt = ""
+                        for i, msg in enumerate(messages):
+                            role = msg["role"]
+                            content = msg["content"]
+                            
+                            # 简单的提示词工程，可以根据具体模型调整
+                            if role == "system":
+                                full_prompt += f"<system>\n{content}\n</system>\n"
+                            elif role == "user":
+                                full_prompt += f"<human>\n{content}\n</human>\n"
+                            elif role == "assistant":
+                                # 如果是最后一条消息且来自assistant，这可能是AttackLM的初始化提示
+                                if i == len(messages) - 1:
+                                    full_prompt += f"<answer>\n{content}"  # 不加结束标记，让模型继续生成
+                                else:
+                                    full_prompt += f"<answer>\n{content}\n</answer>\n"
+                        
+                        if not full_prompt.endswith("<answer>\n"):
+                            full_prompt += "<answer>\n"  # 添加最后的答案前缀
+                        
+                        # 生成回复
+                        outputs = self.model.generate(full_prompt, sampling_params)
+                        
+                        # 获取生成的文本
+                        generated_text = outputs[0].outputs[0].text
+                        responses.append(generated_text)
+                    
+                    return responses
+                
+                def query(self, prompts, behavior=None, phase=None, max_new_tokens=None):
+                    """
+                    为与TargetLM类兼容添加的方法，虽然在use_jailbreakbench=False时不会调用
+                    但为了代码的完整性，我们也实现它
+                    
+                    返回一个带有responses属性的对象
+                    """
+                    # 创建一个简单的对象来模拟jailbreakbench的响应格式
+                    class ResponseObject:
+                        def __init__(self, responses):
+                            self.responses = responses
+                    
+                    # 将单个提示转为列表
+                    if isinstance(prompts, str):
+                        prompts = [prompts]
+                    
+                    # 构建消息列表
+                    messages_list = []
+                    for prompt in prompts:
+                        # 为每个提示创建一个简单的消息列表
+                        messages = [{"role": "user", "content": prompt}]
+                        messages_list.append(messages)
+                    
+                    # 调用batched_generate
+                    responses = self.batched_generate(
+                        messages_list,
+                        max_n_tokens=max_new_tokens,
+                        temperature=0.7,  # 使用默认温度
+                        top_p=0.9         # 使用默认top_p
+                    )
+                    
+                    return ResponseObject(responses)
+            
+            lm = LocalDeepSeekModel(vllm_model, model_name)
         else:
             lm = APILiteLLM(model_name)
     return lm
@@ -50,7 +171,8 @@ class AttackLM():
                 category: str,
                 evaluate_locally: bool):
         
-        self.model_name = Model(model_name)
+        # self.model_name = Model(model_name)
+        self.model_name = model_name
         self.max_n_tokens = max_n_tokens
         self.max_n_attack_attempts = max_n_attack_attempts
 
@@ -65,7 +187,7 @@ class AttackLM():
                                       use_jailbreakbench=False # Cannot use JBB as attacker
                                       )
         self.initialize_output = self.model.use_open_source_model
-        self.template = FASTCHAT_TEMPLATE_NAMES[self.model_name]
+        # self.template = FASTCHAT_TEMPLATE_NAMES[self.model_name]
 
     def preprocess_conversation(self, convs_list: list, prompts_list: list[str]):
         # For open source models, we can seed the generation with proper JSON
@@ -175,28 +297,35 @@ class TargetLM():
         self.temperature = TARGET_TEMP
         self.top_p = TARGET_TOP_P
 
-        self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench)            
+        # self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench)
+        self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench=False)              
         self.category = category
 
     def get_response(self, prompts_list):
-        if self.use_jailbreakbench:
-            llm_response = self.model.query(prompts = prompts_list, 
+        # if self.use_jailbreakbench:
+        #     llm_response = self.model.query(prompts = prompts_list, 
+        #                         behavior = self.category, 
+        #                         phase = self.phase,
+        #                         max_new_tokens=self.max_n_tokens)
+        #     responses = llm_response.responses
+        # else:
+        #     batchsize = len(prompts_list)
+        #     convs_list = [conv_template(self.template) for _ in range(batchsize)]
+        #     full_prompts = []
+        #     for conv, prompt in zip(convs_list, prompts_list):
+        #         conv.append_message(conv.roles[0], prompt)
+        #         full_prompts.append(conv.to_openai_api_messages())
+
+        #     responses = self.model.batched_generate(full_prompts, 
+        #                                                     max_n_tokens = self.max_n_tokens,  
+        #                                                     temperature = self.temperature,
+        #                                                     top_p = self.top_p
+        #                                                 )
+        
+        llm_response = self.model.query(prompts = prompts_list, 
                                 behavior = self.category, 
                                 phase = self.phase,
                                 max_new_tokens=self.max_n_tokens)
-            responses = llm_response.responses
-        else:
-            batchsize = len(prompts_list)
-            convs_list = [conv_template(self.template) for _ in range(batchsize)]
-            full_prompts = []
-            for conv, prompt in zip(convs_list, prompts_list):
-                conv.append_message(conv.roles[0], prompt)
-                full_prompts.append(conv.to_openai_api_messages())
-
-            responses = self.model.batched_generate(full_prompts, 
-                                                            max_n_tokens = self.max_n_tokens,  
-                                                            temperature = self.temperature,
-                                                            top_p = self.top_p
-                                                        )
+        responses = llm_response.responses
            
         return responses
