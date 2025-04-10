@@ -18,6 +18,9 @@ class Model(Enum):
     claude_2 = "claude-2.1"
     gemini = "gemini-pro"
     mixtral = "mixtral"
+    deepseek_qwen_7b = "DeepSeek-R1-Distill-Qwen-7B"
+    deepseek_llama_8b = "DeepSeek-R1-Distill-Llama-8B"
+    deepseek_qwen_1_5b = "DeepSeek-R1-Distill-Qwen-1.5B"
 
 MODEL_NAMES = [model.value for model in Model]
 
@@ -43,12 +46,12 @@ FASTCHAT_TEMPLATE_NAMES: dict[Model, str] = {
     Model.vicuna: "vicuna_v1.1",
     Model.llama_2: "llama-2-7b-chat-hf",
     Model.mixtral: "mixtral",
-    "DeepSeek-R1-Distill-Qwen-7B": "deepseek",
-    "DeepSeek-R1-Distill-Llama-8B": "deepseek",
-    "DeepSeek-R1-Distill-Qwen-1.5B": "deepseek",
+    Model.deepseek_qwen_7b: "deepseek",
+    Model.deepseek_llama_8b: "deepseek",
+    Model.deepseek_qwen_1_5b: "deepseek",
 }
 
-API_KEY_NAMES: dict[Model, str] = {
+API_KEY_NAMES: dict[Model| str, str] = {
     Model.gpt_3_5:  "OPENAI_API_KEY",
     Model.gpt_4:    "OPENAI_API_KEY",
     Model.claude_1: "ANTHROPIC_API_KEY",
