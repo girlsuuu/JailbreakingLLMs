@@ -151,7 +151,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--n-streams",
         type = int,
-        default = 3, #TODO changed
+        default = 5, #TODO changed
         help = "Number of concurrent jailbreak conversations. If this is too large, then there may be out of memory errors when running locally. For our experiments, we use 30."
     )
 
@@ -164,7 +164,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--n-iterations",
         type = int,
-        default = 3,
+        default = 5,
         help = "Number of iterations to run the attack. For our experiments, we use 3."
     )
     parser.add_argument( 

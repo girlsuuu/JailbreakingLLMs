@@ -43,6 +43,9 @@ FASTCHAT_TEMPLATE_NAMES: dict[Model, str] = {
     Model.vicuna: "vicuna_v1.1",
     Model.llama_2: "llama-2-7b-chat-hf",
     Model.mixtral: "mixtral",
+    "DeepSeek-R1-Distill-Qwen-7B": "deepseek",
+    "DeepSeek-R1-Distill-Llama-8B": "deepseek",
+    "DeepSeek-R1-Distill-Qwen-1.5B": "deepseek",
 }
 
 API_KEY_NAMES: dict[Model, str] = {

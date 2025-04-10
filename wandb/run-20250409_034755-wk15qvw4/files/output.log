@@ -1,0 +1,32 @@
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.78s/it, est. speed input: 701.03 toks/s, output: 168.49 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.82s/it, est. speed input: 418.77 toks/s, output: 177.59 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.33s/it, est. speed input: 497.54 toks/s, output: 179.13 toks/s]
+Processed prompts: 100%|████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  2.78it/s, est. speed input: 3464.08 toks/s, output: 178.21 toks/s]
+Processed prompts: 100%|████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.61it/s, est. speed input: 1900.93 toks/s, output: 170.90 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.85s/it, est. speed input: 408.05 toks/s, output: 175.73 toks/s]
+Processed prompts: 100%|████████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00,  1.14it/s, est. speed input: 1349.65 toks/s, output: 180.87 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 133.25it/s, est. speed input: 157078.38 toks/s, output: 135.07 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 123.15it/s, est. speed input: 147161.99 toks/s, output: 124.66 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████| 1/1 [00:00<00:00, 125.86it/s, est. speed input: 148223.51 toks/s, output: 127.49 toks/s]
+Processed prompts: 100%|█████████████████████████████████████████████████████████████████████████████| 1/1 [00:02<00:00,  2.07s/it, est. speed input: 570.99 toks/s, output: 182.58 toks/s]
+Processed prompts: 100%|████████████████████████████████████████████████████████████████████████████| 1/1 [00:01<00:00,  1.13s/it, est. speed input: 1026.86 toks/s, output: 182.20 toks/s]
+Traceback (most recent call last):
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 217, in <module>
+    main(args)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 40, in main
+    extracted_attack_list = attackLM.get_attack(convs_list, processed_response_list)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 284, in get_attack
+    valid_outputs, new_adv_prompts = self._generate_attack(processed_convs_list, init_message)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 264, in _generate_attack
+    raise ValueError(f"Failed to generate valid output after {self.max_n_attack_attempts} attempts. Terminating.")
+ValueError: Failed to generate valid output after 5 attempts. Terminating.
+Traceback (most recent call last):
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 217, in <module>
+    main(args)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/main.py", line 40, in main
+    extracted_attack_list = attackLM.get_attack(convs_list, processed_response_list)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 284, in get_attack
+    valid_outputs, new_adv_prompts = self._generate_attack(processed_convs_list, init_message)
+  File "/home/vivi/Jianli_work/JailbreakingLLMs/conversers.py", line 264, in _generate_attack
+    raise ValueError(f"Failed to generate valid output after {self.max_n_attack_attempts} attempts. Terminating.")
+ValueError: Failed to generate valid output after 5 attempts. Terminating.

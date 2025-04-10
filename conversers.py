@@ -4,24 +4,33 @@ from config import FASTCHAT_TEMPLATE_NAMES, Model
 
 
 def load_attack_and_target_models(args):
-    # create attack model and target model
-    attackLM = AttackLM(model_name = args.attack_model, 
-                        max_n_tokens = args.attack_max_n_tokens, 
-                        max_n_attack_attempts = args.max_n_attack_attempts, 
-                        category = args.category,
-                        evaluate_locally = args.evaluate_locally
-                        )
+    # 将AttackLM加载到GPU 0,1
+    attackLM = AttackLM(model_name=args.attack_model, 
+                      max_n_tokens=args.attack_max_n_tokens, 
+                      max_n_attack_attempts=args.max_n_attack_attempts, 
+                      category=args.category,
+                      evaluate_locally=args.evaluate_locally,
+                      cuda_device="0,1"  # 指定使用的GPU
+                      )
     
-    targetLM = TargetLM(model_name = args.target_model,
-                        category = args.category,
-                        max_n_tokens = args.target_max_n_tokens,
-                        evaluate_locally = args.evaluate_locally,
-                        phase = args.jailbreakbench_phase
-                        )
+    # 将TargetLM加载到GPU 2,3
+    targetLM = TargetLM(model_name=args.target_model,
+                       category=args.category,
+                       max_n_tokens=args.target_max_n_tokens,
+                       evaluate_locally=args.evaluate_locally,
+                       phase=args.jailbreakbench_phase,
+                       cuda_device="2,3"  # 指定使用的GPU
+                       )
     
     return attackLM, targetLM
 
-def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
+def load_indiv_model(model_name, local=False, use_jailbreakbench=True, cuda_device=None):
+    if cuda_device is not None:
+        # 设置当前函数作用域内的CUDA可见设备
+        import os
+        old_cuda_visible_devices = os.environ.get('CUDA_VISIBLE_DEVICES', '')
+        os.environ['CUDA_VISIBLE_DEVICES'] = str(cuda_device)
+        
     if use_jailbreakbench: 
         if local:
             from jailbreakbench import LLMvLLM
@@ -50,9 +59,9 @@ def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
                 model=model_path,
                 dtype="bfloat16",
                 gpu_memory_utilization=0.5,  
-                tensor_parallel_size=4,     
-                max_num_seqs=64,            
-                max_model_len=1024          
+                tensor_parallel_size=1,     
+                max_num_seqs=256,            
+                max_model_len=4096          
             )
             
             # 创建一个包装类，使其接口与其他LM保持一致
@@ -156,6 +165,13 @@ def load_indiv_model(model_name, local = False, use_jailbreakbench=True):
             lm = LocalDeepSeekModel(vllm_model, model_name)
         else:
             lm = APILiteLLM(model_name)
+            
+        # 恢复原来的CUDA_VISIBLE_DEVICES设置
+        if cuda_device is not None:
+            if old_cuda_visible_devices:
+                os.environ['CUDA_VISIBLE_DEVICES'] = old_cuda_visible_devices
+            else:
+                del os.environ['CUDA_VISIBLE_DEVICES']
     return lm
 
 class AttackLM():
@@ -169,7 +185,8 @@ class AttackLM():
                 max_n_tokens: int, 
                 max_n_attack_attempts: int, 
                 category: str,
-                evaluate_locally: bool):
+                evaluate_locally: bool,
+                cuda_device=None):
         
         # self.model_name = Model(model_name)
         self.model_name = model_name
@@ -184,10 +201,11 @@ class AttackLM():
         self.evaluate_locally = evaluate_locally
         self.model = load_indiv_model(model_name, 
                                       local = evaluate_locally, 
-                                      use_jailbreakbench=False # Cannot use JBB as attacker
+                                      use_jailbreakbench=False, # Cannot use JBB as attacker
+                                      cuda_device=cuda_device
                                       )
         self.initialize_output = self.model.use_open_source_model
-        # self.template = FASTCHAT_TEMPLATE_NAMES[self.model_name]
+        self.template = FASTCHAT_TEMPLATE_NAMES[self.model_name]
 
     def preprocess_conversation(self, convs_list: list, prompts_list: list[str]):
         # For open source models, we can seed the generation with proper JSON
@@ -285,6 +303,7 @@ class TargetLM():
             phase: str,
             evaluate_locally: bool = False,
             use_jailbreakbench: bool = True,
+            cuda_device=None
             ):
         
         self.model_name = model_name
@@ -298,34 +317,35 @@ class TargetLM():
         self.top_p = TARGET_TOP_P
 
         # self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench)
-        self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench=False)              
+        self.model = load_indiv_model(model_name, evaluate_locally, use_jailbreakbench=False, cuda_device=cuda_device)              
         self.category = category
+        self.template = FASTCHAT_TEMPLATE_NAMES[self.model_name]
 
     def get_response(self, prompts_list):
-        # if self.use_jailbreakbench:
-        #     llm_response = self.model.query(prompts = prompts_list, 
-        #                         behavior = self.category, 
-        #                         phase = self.phase,
-        #                         max_new_tokens=self.max_n_tokens)
-        #     responses = llm_response.responses
-        # else:
-        #     batchsize = len(prompts_list)
-        #     convs_list = [conv_template(self.template) for _ in range(batchsize)]
-        #     full_prompts = []
-        #     for conv, prompt in zip(convs_list, prompts_list):
-        #         conv.append_message(conv.roles[0], prompt)
-        #         full_prompts.append(conv.to_openai_api_messages())
-
-        #     responses = self.model.batched_generate(full_prompts, 
-        #                                                     max_n_tokens = self.max_n_tokens,  
-        #                                                     temperature = self.temperature,
-        #                                                     top_p = self.top_p
-        #                                                 )
-        
-        llm_response = self.model.query(prompts = prompts_list, 
+        if self.use_jailbreakbench:
+            llm_response = self.model.query(prompts = prompts_list, 
                                 behavior = self.category, 
                                 phase = self.phase,
                                 max_new_tokens=self.max_n_tokens)
-        responses = llm_response.responses
+            responses = llm_response.responses
+        else:
+            batchsize = len(prompts_list)
+            convs_list = [conv_template(self.template) for _ in range(batchsize)]
+            full_prompts = []
+            for conv, prompt in zip(convs_list, prompts_list):
+                conv.append_message(conv.roles[0], prompt)
+                full_prompts.append(conv.to_openai_api_messages())
+
+            responses = self.model.batched_generate(full_prompts, 
+                                                            max_n_tokens = self.max_n_tokens,  
+                                                            temperature = self.temperature,
+                                                            top_p = self.top_p
+                                                        )
+        
+        # llm_response = self.model.query(prompts = prompts_list, 
+        #                         behavior = self.category, 
+        #                         phase = self.phase,
+        #                         max_new_tokens=self.max_n_tokens)
+        # responses = llm_response.responses
            
-        return responses
+        # return responses
