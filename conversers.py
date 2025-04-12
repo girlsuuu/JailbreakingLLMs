@@ -71,7 +71,6 @@ class AttackLM():
                 cuda_device=None):
         
         self.model_name = Model(model_name)
-        # self.model_name = model_name
         self.max_n_tokens = max_n_tokens
         self.max_n_attack_attempts = max_n_attack_attempts
 

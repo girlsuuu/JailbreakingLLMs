@@ -186,7 +186,7 @@ class LocalvLLM(LanguageModel):
             gpu_memory_utilization=0.8,
             tensor_parallel_size=1,
             max_num_seqs=256,
-            max_model_len=4096
+            max_model_len=32768
         )
         
         # 属性设置，使其与AttackLM和TargetLM兼容
