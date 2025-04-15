@@ -157,6 +157,8 @@ class LocalvLLM(LanguageModel):
                 self.hf_model_name = "deepseek-ai/DeepSeek-R1-Distill-Llama-8B"
             elif "DeepSeek-R1-Distill-Qwen-1.5B" in model_name:
                 self.hf_model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B"
+            elif "DeepSeek-R1-Distill-Qwen-32B" in model_name:
+                self.hf_model_name = "deepseek-ai/DeepSeek-R1-Distill-Qwen-32B"
             else:
                 raise ValueError(f"未知的DeepSeek模型: {model_name}")
         elif model_name in MODEL_NAMES:
@@ -184,7 +186,7 @@ class LocalvLLM(LanguageModel):
             model=self.hf_model_name,
             dtype="bfloat16",
             gpu_memory_utilization=0.8,
-            tensor_parallel_size=1,
+            tensor_parallel_size=2,
             max_num_seqs=256,
             max_model_len=32768
         )
@@ -241,7 +243,7 @@ class LocalvLLM(LanguageModel):
                 system_message = msg["content"]
                 break
         
-        if system_message:
+        if system_message != '':
             formatted_prompt += f"<|im_start|>system\n{system_message}\n<|im_end|>\n"
         
         # 添加对话消息

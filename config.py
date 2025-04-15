@@ -2,7 +2,8 @@ from enum import Enum
 VICUNA_PATH = "/home/pchao/vicuna-13b-v1.5"
 LLAMA_PATH = "/home/pchao/Llama-2-7b-chat-hf"
 
-ATTACK_TEMP = 1
+# ATTACK_TEMP = 1
+ATTACK_TEMP = 0.8
 # TARGET_TEMP = 0
 TARGET_TEMP = 0.7
 ATTACK_TOP_P = 0.9
@@ -22,6 +23,7 @@ class Model(Enum):
     deepseek_qwen_7b = "DeepSeek-R1-Distill-Qwen-7B"
     deepseek_llama_8b = "DeepSeek-R1-Distill-Llama-8B"
     deepseek_qwen_1_5b = "DeepSeek-R1-Distill-Qwen-1.5B"
+    deepseek_qwen_32b = 'DeepSeek-R1-Distill-Qwen-32B'
 
 MODEL_NAMES = [model.value for model in Model]
 
@@ -50,6 +52,7 @@ FASTCHAT_TEMPLATE_NAMES: dict[Model, str] = {
     Model.deepseek_qwen_7b: "deepseek",
     Model.deepseek_llama_8b: "deepseek",
     Model.deepseek_qwen_1_5b: "deepseek",
+    Model.deepseek_qwen_32b: "deepseek",
 }
 
 API_KEY_NAMES: dict[Model| str, str] = {
