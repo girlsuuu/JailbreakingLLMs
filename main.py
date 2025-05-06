@@ -151,7 +151,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--n-streams",
         type = int,
-        default = 4, #TODO changed
+        default = 6, #TODO changed
         help = "Number of concurrent jailbreak conversations. If this is too large, then there may be out of memory errors when running locally. For our experiments, we use 30."
     )
 

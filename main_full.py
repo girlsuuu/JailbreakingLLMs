@@ -153,13 +153,13 @@ if __name__ == '__main__':
     parser.add_argument(
         "--attack-max-n-tokens",
         type = int,
-        default = 500,
+        default = 32768,
         help = "Maximum number of generated tokens for the attacker."
     )
     parser.add_argument(
         "--max-n-attack-attempts",
         type = int,
-        default = 5,
+        default = 10,
         help = "Maximum number of attack generation attempts, in case of generation errors."
     )
     ##################################################
@@ -174,7 +174,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--target-max-n-tokens",
         type = int,
-        default = 150,
+        default = 32768,
         help = "Maximum number of generated tokens for the target."
     )
     parser.add_argument(
@@ -216,7 +216,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--n-streams",
         type = int,
-        default = 5, 
+        default = 6, 
         help = "Number of concurrent jailbreak conversations. If this is too large, then there may be out of memory errors when running locally. For our experiments, we use 30."
     )
 
@@ -229,7 +229,7 @@ if __name__ == '__main__':
     parser.add_argument(
         "--n-iterations",
         type = int,
-        default = 5,
+        default = 1,
         help = "Number of iterations to run the attack. For our experiments, we use 3."
     )
     parser.add_argument( 
