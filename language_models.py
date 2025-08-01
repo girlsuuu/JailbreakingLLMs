@@ -1,8 +1,16 @@
-import os 
+import os
 import litellm
 from config import TOGETHER_MODEL_NAMES, LITELLM_TEMPLATES, API_KEY_NAMES, Model
 from loggers import logger
 from common import get_api_key
+import litellm.exceptions
+import traceback
+
+LITELLM_MODEL_MAPPING = {
+    "gpt-o4-mini": "o4-mini",  
+    "claude-4-sonnet": "anthropic/claude-sonnet-4-20250514",
+    "grok-3": "xai/grok-3", 
+}
 
 class LanguageModel():
     def __init__(self, model_name):
@@ -17,6 +25,7 @@ class LanguageModel():
 class APILiteLLM(LanguageModel):
     API_RETRY_SLEEP = 10
     API_ERROR_OUTPUT = "ERROR: API CALL FAILED."
+    API_SAFETY_BLOCK_OUTPUT = "ERROR: PROMPT_BLOCKED_BY_SAFETY_FILTER"
     API_QUERY_SLEEP = 1
     API_MAX_RETRY = 5
     API_TIMEOUT = 20
@@ -29,6 +38,14 @@ class APILiteLLM(LanguageModel):
         self.set_eos_tokens(self.model_name)
         
     def get_litellm_model_name(self, model_name):
+        model_value = model_name.value
+    
+        # 优先使用我们定义的精确映射
+        if model_value in LITELLM_MODEL_MAPPING:
+            litellm_name = LITELLM_MODEL_MAPPING[model_value]
+            self.use_open_source_model = False # 假设这些都是闭源API模型
+            return litellm_name
+        
         if model_name in TOGETHER_MODEL_NAMES:
             litellm_name = TOGETHER_MODEL_NAMES[model_name]
             self.use_open_source_model = True
@@ -60,32 +77,108 @@ class APILiteLLM(LanguageModel):
         
     
     
-    def batched_generate(self, convs_list: list[list[dict]], 
-                         max_n_tokens: int, 
-                         temperature: float, 
-                         top_p: float,
-                         extra_eos_tokens: list[str] = None) -> list[str]: 
-        
-        eos_tokens = self.eos_tokens 
+    def batched_generate(self, convs_list: list[list[dict]],
+                            max_n_tokens: int,
+                            temperature: float,
+                            top_p: float,
+                            extra_eos_tokens: list[str] = None,
+                            **kwargs) -> list[str]:
+        # litellm.set_verbose = True # 建议在需要深度调试时再取消注释
+        eos_tokens = self.eos_tokens
 
         if extra_eos_tokens:
             eos_tokens.extend(extra_eos_tokens)
         if self.use_open_source_model:
             self._update_prompt_template()
+
+        # --- 开始修改 ---
         
-        outputs = litellm.batch_completion(
-            model=self.litellm_model_name, 
-            messages=convs_list,
-            api_key=self.api_key,
-            temperature=temperature,
-            top_p=top_p,
-            max_tokens=max_n_tokens,
-            num_retries=self.API_MAX_RETRY,
-            seed=0,
-            stop=eos_tokens,
-        )
+        # 1. 构建一个基础的参数字典
+        litellm_args = {
+            "model": self.litellm_model_name,
+            "messages": convs_list,
+            "api_key": self.api_key,
+            "temperature": temperature,
+            "top_p": top_p,
+            "max_tokens": max_n_tokens,
+            "num_retries": self.API_MAX_RETRY,
+        }
+
+        # 2. 将从 TargetLM 传来的所有额外参数（如 thinking, reasoning_effort）合并进来
+        litellm_args.update(kwargs)
         
-        responses = [output["choices"][0]["message"].content for output in outputs]
+        # 3. 仅当 eos_tokens 列表不为空时，才添加 'stop' 参数
+        if eos_tokens:
+            litellm_args['stop'] = eos_tokens
+
+        # 3. 根据模型动态设置 seed 参数
+        if "grok" in self.litellm_model_name:
+            litellm_args['seed'] = 1
+        else:
+            # 对于所有其他模型，使用 seed = 1
+            litellm_args['seed'] = 1
+
+        # --- 修改结束 ---
+        
+        # 您原有的、非常好的异常处理逻辑将保持不变
+        try:
+            # 使用我们构建好的参数字典来调用 litellm
+            outputs = litellm.batch_completion(**litellm_args)
+
+            responses = []
+            for i, item in enumerate(outputs):
+                # 检查返回列表中的每一项是否是一个异常对象
+                if isinstance(item, Exception):
+                    # 如果是异常，打印它的详细信息
+                    print("="*50)
+                    print(">>> 成功捕获并解析了返回的异常对象 <<<")
+                    print(f"异常类型: {type(item)}")
+                    # str(item) 会给出最可读的错误信息
+                    print(f"API 返回的详细错误信息: {str(item)}")
+                    print("="*50)
+
+                    # 记录日志并添加错误占位符
+                    logger.error(f"API call failed with error: {str(item)}")
+                    responses.append(self.API_ERROR_OUTPUT)
+                else:
+                    # 安全地获取 content，如果 content 是 None，则用空字符串""替代
+                    content = item["choices"][0]["message"].get("content")
+                    responses.append(content or "") # Pythonic 的写法，如果 content 为 None 或空字符串，则结果为""
+
+        except litellm.exceptions.BadRequestError as e:
+            # 打印出详细的错误信息，这会显示 API 返回的真正原因
+            print("="*50)
+            print(">>> 捕获到具体的 BadRequestError <<<")
+            print(f"异常类型: {type(e)}")
+            print(f"异常的字符串表示 (str): {str(e)}") # 这是最有用的信息！
+            print(f"异常的官方表示 (repr): {repr(e)}")
+            print("="*50)
+
+            # 使用 logger 记录下来，方便复查日志
+            logger.error("捕获到 BadRequestError，这通常意味着发送给 API 的请求参数或格式有误。")
+            logger.error(f"API 返回的详细错误信息: {str(e)}")
+
+            # 返回错误占位符
+            responses = [self.API_ERROR_OUTPUT] * len(convs_list)
+
+        # --- MODIFIED ERROR HANDLING ---
+        except litellm.exceptions.APIError as e:
+            # 检查错误信息是否明确指出是内容被禁止
+            if "PROHIBITED_CONTENT" in str(e) or "blocked by the safety filters" in str(e).lower():
+                logger.warning(f"A request was blocked by the API's safety filters: {e}")
+                logger.warning("This implies the input was highly sensitive. Treating as a safety block.")
+                # 返回一个特殊的占位符，表示被拦截
+                responses = [self.API_SAFETY_BLOCK_OUTPUT] * len(convs_list)
+            else:
+                # 对于其他类型的API错误，使用通用错误占位符
+                logger.error(f"LiteLLM APIError during batch generation: {e}")
+                responses = [self.API_ERROR_OUTPUT] * len(convs_list)
+
+        except Exception as e:
+            # 捕获所有其他可能的异常
+            logger.error(f"An unexpected error occurred during batch generation: {e}")
+            logger.error(traceback.format_exc())
+            responses = [self.API_ERROR_OUTPUT] * len(convs_list)
 
         return responses
 

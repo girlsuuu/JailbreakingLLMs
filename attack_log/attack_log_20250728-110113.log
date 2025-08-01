@@ -1,0 +1,6 @@
+2025-07-28 11:01:13 - PAIR - INFO - Logging to file is enabled. Output will be saved to: attack_log/attack_log_20250728-110113.log
+2025-07-28 11:01:13 - PAIR - INFO - Starting PAIR attack evaluation.
+2025-07-28 11:01:13 - PAIR - INFO - Attack Model: gemini-2.5-pro, Target Model: gpt-o4-mini
+2025-07-28 11:01:13 - PAIR - INFO - 为模型 gpt-o4-mini 设置 max_n_tokens 为: 10000
+2025-07-28 11:01:13 - PAIR - INFO - 为模型 gpt-o4-mini 设置 'reasoning_effort' 参数为: 'high'
+2025-07-28 11:01:13 - PAIR - ERROR - Invalid range: --start-examples must be > 0 and --end-examples must be > --start-examples.

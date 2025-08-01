@@ -3,11 +3,11 @@ VICUNA_PATH = "/home/pchao/vicuna-13b-v1.5"
 LLAMA_PATH = "/home/pchao/Llama-2-7b-chat-hf"
 
 # ATTACK_TEMP = 1
-ATTACK_TEMP = 0.8
+ATTACK_TEMP = 1
 # TARGET_TEMP = 0
-TARGET_TEMP = 0.7
+TARGET_TEMP = 1
 ATTACK_TOP_P = 0.9
-TARGET_TOP_P = 1
+TARGET_TOP_P = 0.95
 
 
 ## MODEL PARAMETERS ##
@@ -19,6 +19,11 @@ class Model(Enum):
     claude_1 = "claude-instant-1.2"
     claude_2 = "claude-2.1"
     gemini = "gemini-pro"
+    # Added Gemini 2.5 Pro as per request
+    gemini_2_5_pro = "gemini-2.5-pro"
+    gpt_o4_mini = "gpt-o4-mini"
+    grok_3 = "grok-3"
+    claude_4_sonnet = "claude-4-sonnet"
     mixtral = "mixtral"
     deepseek_qwen_7b = "DeepSeek-R1-Distill-Qwen-7B"
     deepseek_llama_8b = "DeepSeek-R1-Distill-Llama-8B"
@@ -46,6 +51,12 @@ FASTCHAT_TEMPLATE_NAMES: dict[Model, str] = {
     Model.claude_1: "claude-instant-1.2",
     Model.claude_2: "claude-2.1",
     Model.gemini: "gemini-pro",
+    # Added entry for Gemini 2.5 Pro. Using the "gemini-pro" template is generally safe
+    # as LiteLLM handles the specific API calls.
+    Model.gemini_2_5_pro: "gemini-pro",
+    Model.gpt_o4_mini: "gpt-o4-mini",      
+    Model.grok_3: "grok-3",               
+    Model.claude_4_sonnet: "claude-4",
     Model.vicuna: "vicuna_v1.1",
     Model.llama_2: "llama-2-7b-chat-hf",
     Model.mixtral: "mixtral",
@@ -61,6 +72,11 @@ API_KEY_NAMES: dict[Model| str, str] = {
     Model.claude_1: "ANTHROPIC_API_KEY",
     Model.claude_2: "ANTHROPIC_API_KEY",
     Model.gemini:   "GEMINI_API_KEY",
+    # Added entry for Gemini 2.5 Pro to specify its API key.
+    Model.gemini_2_5_pro: "GEMINI_API_KEY",
+    Model.gpt_o4_mini: "OPENAI_API_KEY",
+    Model.grok_3: "GROK_API_KEY",          
+    Model.claude_4_sonnet: "ANTHROPIC_API_KEY",
     Model.vicuna:   "TOGETHER_API_KEY",
     Model.llama_2:  "TOGETHER_API_KEY",
     Model.mixtral:  "TOGETHER_API_KEY",

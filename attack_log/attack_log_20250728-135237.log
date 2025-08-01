@@ -1,0 +1,5 @@
+2025-07-28 13:52:37 - PAIR - INFO - Logging to file is enabled. Output will be saved to: attack_log/attack_log_20250728-135237.log
+2025-07-28 13:52:37 - PAIR - INFO - Starting PAIR attack evaluation.
+2025-07-28 13:52:37 - PAIR - INFO - Attack Model: gemini-2.5-pro, Target Model: claude-4-sonnet
+2025-07-28 13:52:37 - PAIR - INFO - 为模型 claude-4-sonnet 设置 max_n_tokens 为: 8000
+2025-07-28 13:52:37 - PAIR - INFO - 为模型 claude-4-sonnet 启用 'thinking' 参数，预算为: 4000
